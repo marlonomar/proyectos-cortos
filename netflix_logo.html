@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>netflix logo</title>
+</head>
+<body>
+    <div class="netflix"></div>
+
+    <style>
+
+        body {
+            background: black;
+            display: flex;
+            justify-content: center;
+        }
+
+        .netflix {
+            height: 15rem;
+            width: 3rem;
+            position: relative;
+            border-left: 3rem solid #d10913;
+            border-right: 3rem solid #d10913;
+        }
+
+        .netflix::before{
+            display: block;
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #e50914;
+            transform: skewX(21.5deg);
+            box-shadow: 0 0 30px black;
+        }
+
+        .netflix::after{
+            content: '';
+            width: 15rem;
+            height: 2rem;
+            background: black;
+            border-radius: 50%;
+            display: block;
+            position: absolute;
+            left: -200%;
+            top: 98%;
+        }
+    </style>
+</body>
+</html>
