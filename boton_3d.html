@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>boton 3d</title>
+</head>
+<body>
+    <div class="container">
+        <button class="btn">Hover On Me</button>
+    </div>
+
+    <style>
+        .container {
+            height: 100%;
+            position: relative;
+            perspective: 800px;
+            width: 300px;
+            overflow: hidden;
+        }
+
+        .btn{
+            border: none;
+            position: relative;
+            padding: 30px 80px;
+            display: inline-block;
+            text-transform: uppercase;
+            background: rgb(190, 5, 110);
+            color: #fff;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            outline: 1px solid transparent;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease-out;
+            width: 300px;
+
+        }
+
+        .btn::after{
+            content: "button";
+            position: absolute;
+            padding: 30px 80px;
+            z-index: -1;
+            transition: all 0.5s ease-out;
+            width: 140px;
+            left: 0;
+            top: -100%;
+            background: rgb(133, 2, 76);
+            transform-origin: 0% 100%;
+            transform: rotateX(90deg);
+
+        }
+        .btn:hover{
+            transform: translateY(40px) rotateX(-90deg);
+        }
+
+    </style>
+</body>
+</html>
