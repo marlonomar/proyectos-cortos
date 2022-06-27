@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lineas rebotando</title>
+</head>
+<body>
+    <div class="wave"></div>
+    <style>
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1d1e2c;
+        }
+
+        .wave{
+            height: 306px;
+            width:  306px;
+            transform-style: preserve-3d;
+            transform: perspective(500px) rotateX(60deg);
+        }
+
+        .wave span {
+            position: absolute;
+            display: block;
+            border: 3px solid #00802a;
+            border-radius: 50%;
+            box-shadow: 0 5px 0 #014d1a;
+            animation: animate 3s ease-in-out infinite;
+        }
+
+        @keyframes animate {
+            0%, 100% {
+                transform: translateZ(-100px);
+            }
+            50%{
+                transform: translateZ(100px);
+            }
+        }
+
+
+    </style>
+    <script>
+           let wave = document.getElementsByClassName('wave')
+           let numberLines = 16;
+           for (let i = 0; i < 16; i++) {
+            wave[0].append(document.createElement('span'));
+            let insetNumber  = parseInt(i * 10);
+            let decimal = parseFloat(numberLines-- / 10);
+            wave[0].childNodes[i].style.inset=`${insetNumber}px`;
+            wave[0].childNodes[i].style.animationDelay=`${decimal}s`;
+           }       
+    </script>
+</body>
+</html>
