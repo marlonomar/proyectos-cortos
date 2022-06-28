@@ -1,23 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lineas rebotando</title>
 </head>
+
 <body>
+    <div class="panel-control">
+        <input type="number" id="numberLines" placeholder="ingrese un valor numerico" min="3" max="35" value="16">
+        <button class="create" id="create" onclick="create ()" type="submit">Crear</button>
+        <div class="colors-content">
+            <h4>Colores:</h4>
+            <form id="colors">
+
+                <div class="more-colors-content">
+                    <div id="more" class="btn">+</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="wave"></div>
     <style>
-        body{
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #1d1e2c;
+            background: #8f8f8f;
         }
 
-        .wave{
+        .btn {
+            width: 30px;
+            height: 30px;
+            background: white;
+        }
+
+        .panel-control {
+            margin-right: 15%;
+        }
+
+        .wave {
             transform-style: preserve-3d;
             transform: perspective(500px) rotateX(60deg);
         }
@@ -25,84 +51,161 @@
         .wave span {
             position: absolute;
             display: block;
-            border: 3px solid #00802a;
             border-radius: 50%;
-            box-shadow: 0 5px 0 #014d1a;
             animation: animate 3s ease-in-out infinite;
         }
 
+        .hide {
+            display: none;
+        }
+
         @keyframes animate {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateZ(-100px);
             }
-            50%{
+
+            50% {
                 transform: translateZ(100px);
             }
         }
-
-
     </style>
     <script>
 
-           let wave = document.getElementsByClassName('wave')
-           let numberLines = parseInt(prompt());
-
-           if(numberLines >= 40){
-                numberLines = parseInt(prompt());
-           }
-
-
-           let colors = [
+        let colorsDefault = [
             {
-                "borderColor" : "#f8f2ff",
-                "boxShadow" : "0 5px #c5c2c9"
+                "borderColor": "#f8f2ff",
+                "boxShadow": "#c5c2c9"
             },
             {
-                "borderColor" : "#3fc1c9",
-                "boxShadow" : "0 5px #339da3"
+                "borderColor": "#3fc1c9",
+                "boxShadow": "#339da3"
             },
             {
-                "borderColor" : "#fc5185",
-                "boxShadow" : "0 5px #c53963"
+                "borderColor": "#fc5185",
+                "boxShadow": "#c53963"
             },
             {
-                "borderColor" : "#5d23a4",
-                "boxShadow" : "0 5px #4b247a"
+                "borderColor": "#5d23a4",
+                "boxShadow": "#4b247a"
             }
-           ];
+        ];
 
-           let colorPosition = 0;
-           
-           let area = `${parseInt(numberLines * 20)}px` ;
 
-           wave[0].style.width=area
-           wave[0].style.height=area
-           
-           for (let i = 0; i <= parseInt(numberLines + 3); i++) {
-            
-            wave[0].append(document.createElement('span'));
+        function createColorsSelect(colors) {
 
-            let insetNumber  = parseInt(i * 10);
-            let decimal = parseFloat(numberLines-- / 10);
-            let elementCSS = wave[0].childNodes[i].style;
-            let color;
+            for (let i = 0; i < colors.length; i++) {
+                let colorsTemaplate = `
+                                        <div class='newColor'>
+                                            <div class="remove hide">
+                                            <button class="remove-color">-</button>
+                                            </div>
+                                            <label for="">color:</label>
+                                            <input type="color" value="${colors[i].borderColor}">
+                                            <label for="">shadow:</label>
+                                            <input type="color" value="${colors[i].boxShadow}">
+                                        </div>
+                                    `;
 
-            if(colorPosition >= colors.length){
-                colorPosition = 0 ;
+                let colorsPainel = document.getElementById('colors');
+                let newColor = document.createElement('div');
+                newColor.innerHTML = colorsTemaplate;
+                colorsPainel.append(newColor)
+            }
+        }
+
+        function ganho(hex, ganho) {
+            var r = Number.parseInt(Number.parseInt(hex.substring(0, 2), 16) * ((ganho / 100) + 1)).toString(16).padStart(2, '0');
+            var g = Number.parseInt(Number.parseInt(hex.substring(2, 4), 16) * ((ganho / 100) + 1)).toString(16).padStart(2, '0');
+            var b = Number.parseInt(Number.parseInt(hex.substring(4, 6), 16) * ((ganho / 100) + 1)).toString(16).padStart(2, '0');
+
+            return r + g + b;
+        }
+
+        function craeteNewColorsSelect() {
+            let newColorsArray = [];
+            let newColors = document.querySelectorAll('.newColor');
+
+            for (let i = 0; i < newColors.length; i++) {
+                let inputs = newColors[i].getElementsByTagName('input');
+                let principalColor = inputs[0].value;
+                let shadow = inputs[1].value;
+
+                //let principalColor = '#'+ganho(color, 20);
+
+                let colorObj = {
+                    'borderColor' :principalColor,
+                    'boxShadow' : shadow
+                }
+
+                newColorsArray.push(colorObj)
             }
 
-            color = colors[colorPosition];
+            return newColorsArray
+        }
 
-            elementCSS.inset=`${insetNumber}px`;
-            elementCSS.animationDelay=`${decimal}s`;
-            elementCSS.borderColor=color.borderColor;
-            elementCSS.boxShadow=color.boxShadow;
+        function removeLineArt() {
+            if (document.getElementsByClassName('wave')) {
+                document.getElementsByClassName('wave')[0].remove();
+            }
 
-            colorPosition++
-        
-           }       
+        }
 
+        function create() {
+            removeLineArt();
+
+            let numberLines = parseInt(document.querySelectorAll('#numberLines')[0].value);
+            let wave = document.createElement('div');
+
+            wave.className = 'wave';
+            document.body.append(wave)
+            wave = document.getElementsByClassName('wave')
+
+            if (numberLines > 35) {
+                return
+            }
+
+            let colorPosition = 0;
+
+            let area = `${parseInt(numberLines * 20)}px`;
+
+            wave[0].style.width = area;
+            wave[0].style.height = area;
            
+            for (let i = 0; i <= parseInt(numberLines + 3); i++) {
+
+                wave[0].append(document.createElement('span'));
+
+                let insetNumber = parseInt(i * 10);
+                let decimal = parseFloat(numberLines-- / 10);
+                let elementCSS = wave[0].childNodes[i].style;
+                let color;
+                let colors = craeteNewColorsSelect();
+
+                if (colorPosition >= colors.length) {
+                    colorPosition = 0;
+                }
+
+                color = colors[colorPosition];
+
+                elementCSS.inset = `${insetNumber}px`;
+                elementCSS.animationDelay = `${decimal}s`;
+                elementCSS.border = ` 3px solid ${color.borderColor}`;
+                elementCSS.boxShadow = `0 5px ${color.boxShadow}`;
+
+                colorPosition++
+
+            }
+
+        }
+
+        function addNewColor (){
+
+        }
+        createColorsSelect(colorsDefault);
+
     </script>
 </body>
+
 </html>
