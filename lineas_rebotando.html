@@ -10,8 +10,22 @@
 
 <body>
     <div class="panel-control">
-        <input type="number" id="numberLines" placeholder="ingrese un valor numerico" min="3" max="35" value="16">
+        <h3>Crear :</h3>
+        <input type="number" id="numberLines" placeholder="ingrese un numero" min="3" max="35">
         <button class="create" id="create" onclick="create ()" type="submit">Crear</button>
+        <div class="rotate">
+            <h4>Rotar:</h4>
+            <div class="content-btn">
+                <div class="btn-rotate up" rotate="5" dimention="x">up</div>
+            </div>
+            <div class="content-btn">
+                <div class="btn-rotate left" rotate="-5" dimention="y">left</div>
+                <div class="btn-rotate right" rotate="5" dimention="y">right</div>
+            </div>
+            <div class="content-btn">
+                <div class="btn-rotate down" rotate="-5" dimention="x">down</div>
+            </div>
+        </div>
         <div class="colors-content">
             <h4>Colores: <div id="more" class="btn" onclick="addNewColor ()">+</div>
             </h4>
@@ -31,7 +45,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #8f8f8f;
+            background: #1b192d;
         }
 
         #numberLines {
@@ -51,7 +65,7 @@
             font-weight: bold;
             font-size: 11px;
             cursor: pointer;
-            transition:all ease 0.8s;
+            transition: all ease 0.8s;
         }
 
         #create:hover {
@@ -111,6 +125,7 @@
             border-radius: 8px;
             box-shadow: 9px 10px 9px 1px #00000057;
             font-family: monospace;
+            min-width: 222px;
         }
 
         @keyframes animate {
@@ -123,6 +138,37 @@
             50% {
                 transform: translateZ(100px);
             }
+        }
+
+        .remove-color {
+            background: red;
+            width: 15px;
+            height: 14px;
+            padding: 1px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .rotate {}
+
+        .rotate .btn-rotate {
+            background: #acacac;
+            width: 38px;
+            padding: 5px;
+            text-align: center;
+            margin: 10px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .content-btn {
+            display: flex;
+            justify-content: center;
         }
     </style>
     <script>
@@ -151,19 +197,18 @@
 
             for (let i = 0; i < colors.length; i++) {
                 let colorsTemaplate = `
-                                        <div class='newColor'>
-                                            <div class="remove hide">
-                                            <button class="remove-color">-</button>
-                                            </div>
-                                            <label for="">color:</label>
-                                            <input type="color" value="${colors[i].borderColor}">
-                                            <label for="">shadow:</label>
-                                            <input type="color" value="${colors[i].boxShadow}">
+                                        <div class="remove">
+                                        <div class="remove-color" onclick='removeColor()'>-</div>
                                         </div>
+                                        <label for="">color:</label>
+                                        <input type="color" value="${colors[i].borderColor}">
+                                        <label for="">shadow:</label>
+                                        <input type="color" value="${colors[i].boxShadow}">
                                     `;
 
                 let colorsPainel = document.getElementById('colors');
                 let newColor = document.createElement('div');
+                newColor.className = 'newColor';
                 newColor.innerHTML = colorsTemaplate;
                 colorsPainel.append(newColor)
             }
@@ -227,6 +272,9 @@
             wave[0].style.width = area;
             wave[0].style.height = area;
 
+            let colors = craeteNewColorsSelect();
+            showRemoveColorButton(numberLines, colors)
+
             for (let i = 0; i <= parseInt(numberLines + 3); i++) {
 
                 wave[0].append(document.createElement('span'));
@@ -235,7 +283,7 @@
                 let decimal = parseFloat(numberLines-- / 10);
                 let elementCSS = wave[0].childNodes[i].style;
                 let color;
-                let colors = craeteNewColorsSelect();
+
 
                 if (colorPosition >= colors.length) {
                     colorPosition = 0;
@@ -251,6 +299,9 @@
                 colorPosition++
 
             }
+
+            removeColor()
+            rotate ()
 
         }
 
@@ -268,8 +319,79 @@
                 createColorsSelect(colorsDefault)
             }
 
+            showRemoveColorButton(parseInt(document.querySelectorAll('#numberLines')[0].value), document.querySelectorAll('.newColor'))
 
         }
+
+        function mapColorButtons(action) {
+            let colors = document.querySelectorAll('.remove')
+
+            var arr = Object.entries(colors);
+            arr.map((element, index) => {
+                if (action === 'show') {
+
+                    element[1].classList.remove('hide')
+                } else {
+
+                    element[1].classList.add('hide')
+                }
+            })
+        }
+
+        function showRemoveColorButton(numberLines, colorsDefault) {
+            if (numberLines > colorsDefault.length && colorsDefault.length > 1) {
+                mapColorButtons('show')
+            } else {
+                mapColorButtons('hide')
+            }
+        }
+
+        function removeColor() {
+
+            document.querySelectorAll('.remove').forEach(item => {
+                item.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    e.path[2].remove()
+                    showRemoveColorButton(parseInt(document.querySelectorAll('#numberLines')[0].value), document.querySelectorAll('.newColor'))
+                })
+            })
+
+        }
+
+
+        function rotate (){
+            localStorage.setItem('rotateX' , 60);
+            localStorage.setItem('rotateY' , 0);
+
+            document.querySelectorAll('.btn-rotate').forEach(item => {
+                item.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+
+                    let rotate = parseInt(e.target.attributes['rotate'].value);
+                    let dimention = e.target.attributes['dimention'].value;
+
+
+                    let x = parseInt(localStorage.getItem('rotateX'));
+                    let y = parseInt(localStorage.getItem('rotateY'));
+
+                    let finalX = localStorage.getItem('rotateX');
+                    let finalY = localStorage.getItem('rotateY');
+                    if(dimention == 'x'){
+                        finalX = parseInt(rotate + x);
+                        localStorage.setItem('rotateX' , finalX)
+                    }else{
+                        finalY = parseInt(rotate + y);
+                        localStorage.setItem('rotateY' , finalY)
+                        
+                    }
+                    console.log(finalX , finalY)
+                   document.getElementsByClassName('wave')[0].style.transform=`perspective(500px) rotateX(${finalX}deg) rotateY(${finalY}deg)`
+                })
+            })
+        }
+
         createColorsSelect(colorsDefault);
 
     </script>
