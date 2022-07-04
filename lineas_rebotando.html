@@ -11,9 +11,10 @@
 <body>
     <div class="panel-control">
         <h3>Crear :</h3>
-        <input type="number" id="numberLines" placeholder="ingrese un numero" min="3" max="35">
+        <input type="number" id="numberLines" placeholder="ingrese un numero" min="3" max="30">
         <button class="create" id="create" onclick="create ()" type="submit">Crear</button>
-        <div class="rotate">
+
+        <div class="rotate hide">
             <h4>Rotar:</h4>
             <div class="content-btn">
                 <div class="btn-rotate up" rotate="5" dimention="x">up</div>
@@ -25,6 +26,10 @@
             <div class="content-btn">
                 <div class="btn-rotate down" rotate="-5" dimention="x">down</div>
             </div>
+        </div>
+        <div class="radius">
+            <h4>Radio:</h4>
+            <input type="range" min="0" max="100" id="range">
         </div>
         <div class="colors-content">
             <h4>Colores: <div id="more" class="btn" onclick="addNewColor ()">+</div>
@@ -106,12 +111,13 @@
         .wave {
             transform-style: preserve-3d;
             transform: perspective(500px) rotateX(60deg);
+            position: absolute;
+            right: 14%;
         }
 
         .wave span {
             position: absolute;
             display: block;
-            border-radius: 50%;
             animation: animate 3s ease-in-out infinite;
         }
 
@@ -126,6 +132,13 @@
             box-shadow: 9px 10px 9px 1px #00000057;
             font-family: monospace;
             min-width: 222px;
+            position: absolute;
+            left: 10%;
+            z-index: 999;
+            max-height: 466px;
+            overflow: auto;
+            padding-bottom: 10px;
+
         }
 
         @keyframes animate {
@@ -151,8 +164,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        .rotate {}
 
         .rotate .btn-rotate {
             background: #acacac;
@@ -300,8 +311,15 @@
 
             }
 
+            radiusAuto()
             removeColor()
-            rotate ()
+            showRotatePanel()
+            rotateAuto()
+            rotatePanel()
+
+            document.getElementById('range').addEventListener('change', function (e) {
+                radius()
+            });
 
         }
 
@@ -359,10 +377,27 @@
 
         }
 
+        function showRotatePanel() {
+            document.querySelector('.rotate ').classList.remove('hide')
+        }
 
-        function rotate (){
-            localStorage.setItem('rotateX' , 60);
-            localStorage.setItem('rotateY' , 0);
+        function rotateAuto() {
+            let transform = localStorage.getItem('rotate');
+            if (transform) {
+                document.getElementsByClassName('wave')[0].style.transform = transform;
+            }
+        }
+
+        function radiusAuto() {
+            let range = localStorage.getItem('radius');
+            if (range) {
+                radius()
+            }
+        }
+
+        function rotatePanel() {
+            localStorage.setItem('rotateX', 60);
+            localStorage.setItem('rotateY', 0);
 
             document.querySelectorAll('.btn-rotate').forEach(item => {
                 item.addEventListener('click', e => {
@@ -378,19 +413,33 @@
 
                     let finalX = localStorage.getItem('rotateX');
                     let finalY = localStorage.getItem('rotateY');
-                    if(dimention == 'x'){
+                    if (dimention == 'x') {
                         finalX = parseInt(rotate + x);
-                        localStorage.setItem('rotateX' , finalX)
-                    }else{
+                        localStorage.setItem('rotateX', finalX)
+                    } else {
                         finalY = parseInt(rotate + y);
-                        localStorage.setItem('rotateY' , finalY)
-                        
+                        localStorage.setItem('rotateY', finalY)
+
                     }
-                    console.log(finalX , finalY)
-                   document.getElementsByClassName('wave')[0].style.transform=`perspective(500px) rotateX(${finalX}deg) rotateY(${finalY}deg)`
+                    let transform = `perspective(500px) rotateX(${finalX}deg) rotateY(${finalY}deg)`;
+                    localStorage.setItem('rotate', transform)
+                    document.getElementsByClassName('wave')[0].style.transform = transform;
                 })
             })
         }
+
+
+        function radius() {
+            let radiusElements = document.querySelector('.wave').childNodes;
+            let range = `${document.getElementById('range').value}%`;
+            localStorage.setItem('radius', range)
+            for (let i = 0; i < radiusElements.length; i++) {
+                radiusElements[i].style.borderRadius = range
+
+            }
+        }
+
+
 
         createColorsSelect(colorsDefault);
 
